@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Search Problem</title>
+    <meta charset="utf-8">
+    <!-- {% load static %} -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+  </head>
+
+
+  <body>
+        <h2 style="margin-left: 100px; font-family:istokweb_regular;"> Search Reviews </h2>
+        <div>
+          <form class="form-inline" action="/get_search/" method="get" id="query">
+            <div class="form-group">
+              <input  class="form-control" id="inputQuery" placeholder="Enter Query"  style="width: 350px; height: 25px ;font-size:18px; font-family:istokweb_regular; margin-left:100px; margin-top:20px; margin-bottom:10px;" required >
+            </div>
+            <input type="submit" value="Submit" class="btn btn-success" id="submit" style="height: 45px; width: 120px; font-size: 18px; font-family:istokweb_regular; margin-left:100px;"></input>
+
+          </form>
+          <p class="" id="query-output"></p>  
+          
+        </div>
+    <script >
+             function getCookie(name) {
+               var cookieValue = null;
+               if (document.cookie && document.cookie != '') {
+                 var cookies = document.cookie.split(';');
+                 for (var i = 0; i < cookies.length; i++) {
+                 var cookie = jQuery.trim(cookies[i]);
+                 // Does this cookie string begin with the name we want?
+                 if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                     cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                     break;
+                  }
+             }
+         }
+         return cookieValue;
+        }
+
+        $("#submit").click(function(e) {
+
+         e.preventDefault();
+
+         var csrftoken = getCookie('csrftoken');
+
+         var query = $('#inputQuery').val();
+         var inpObj = document.getElementById("inputQuery");
+         
+
+         $.ajax({
+                 url : "http://127.0.0.1:8000/", // the endpoint,commonly same url
+                 type : "GET", // http method
+                 dataType: 'json',
+                 data : { csrfmiddlewaretoken : csrftoken, 
+                 query : query
+         }, // data sent with the post request
+
+         // handle a successful response
+         success : function(json_data) {
+            // $.each(json_data, function(index, element) {
+            // $('body').append($('<div>', {
+            //     text: element.name
+            // }));
+            //  });
+            var item_data = json_data.search_data
+            var query_output = "<h2> Search Results </h2>";
+
+            for (i=0; i<item_data.length; i++){
+              query_output+= "<h3> Result no: " + (i+1).toString() + "</h3>"
+              query_output+="Profile Name: "+ item_data[i].profileName + "<br>"
+              query_output+="Review time: "+ item_data[i].review_time + "<br>"
+              query_output+="Score: "+ item_data[i].score + "<br>"
+              query_output+="Summary: "+ item_data[i].review_summary + "<br>"
+              query_output+="text: "+ item_data[i].review_text + "<br>"
+              query_output+="Product id: "+ item_data[i].product_id + "<br>"
+              query_output+= "<br>";
+            }
+
+            document.getElementById("query-output").innerHTML=query_output
+            console.log('Query data submitted: ', json_data); // another sanity check
+              //On success show the data posted to server as a message
+         },
+
+         // handle a non-successful response
+         error : function(xhr,errmsg,err) {
+         console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
+         }
+         });
+        //  $( '#query').each(function(){
+        //     this.reset();
+        // });
+        }); 
+
+    </script>
+  </body>
+</html>
