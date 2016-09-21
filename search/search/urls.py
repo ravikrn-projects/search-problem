@@ -21,6 +21,7 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     # url(r'^app/', include('app.urls')),
     url(r'^$', views.get_search, name='index'),
+    url(r'^search/', views.get_search1, name='index'),
     url(r'^index.html$', views.index, name='index'),
     # url(r'^get_search$', views.get_search, name='get_search')
 ]
